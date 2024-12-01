@@ -1,4 +1,13 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package utils
+
+/**
+ * Split a String into 2 parts using a separator, returning a Pair.
+ */
+inline fun String.splitToPair(separator: String, ignoreCase: Boolean = false): Pair<String, String> {
+	return split(separator, ignoreCase = ignoreCase, limit = 2).let { it[0] to it[1] }
+}
 
 /**
  * Replaces all occurrences of the keys in the map with the corresponding values.
