@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "unused")
 
 package utils
 
@@ -67,21 +67,42 @@ inline fun <T> List<T>.toPair(): Pair<T, T> {
  * Get the element at the specified XY index or null if the index is out of bounds.
  */
 inline fun <T> List<List<T>>.getOrNull(x: Int, y: Int): T? {
-	return getOrNull(y)?.getOrNull(x)
+	return getOrNull(x)?.getOrNull(y)
 }
 
 /**
  * Get the element at the specified XY index or null if the index is out of bounds.
  */
 inline fun <T> List<List<T>>.getOrNull(point: Point): T? {
-	return getOrNull(point.y)?.getOrNull(point.x)
+	return getOrNull(point.x, point.y)
+}
+
+/**
+ * Get the element at the specified XY index.
+ */
+inline operator fun <T> List<List<T>>.get(x: Int, y: Int): T {
+	return this[x][y]
 }
 
 /**
  * Get the element at the specified XY index.
  */
 inline operator fun <T> List<List<T>>.get(point: Point): T {
-	return this[point.y][point.x]
+	return this[point.x][point.y]
+}
+
+/**
+ * Check if the specified XY index is within the bounds of the matrix.
+ */
+inline fun <T> List<List<T>>.containsIndex(x: Int, y: Int): Boolean {
+	return x in indices && y in get(x).indices
+}
+
+/**
+ * Check if the specified XY index is within the bounds of the matrix.
+ */
+inline fun <T> List<List<T>>.containsIndex(point: Point): Boolean {
+	return containsIndex(point.x, point.y)
 }
 
 /**
@@ -114,10 +135,9 @@ inline fun <T> List<List<T>>.countIndexed(predicate: (xy: Point, value: T) -> Bo
  * and performs the action on the element.
  */
 inline fun <T> List<List<T>>.forEachIndexed(action: (xy: Point, value: T) -> Unit) {
-	for (y in indices) {
-		for (x in this[y].indices) {
-			action(Point(x, y), this[y][x])
+	for (x in indices) {
+		for (y in this[x].indices) {
+			action(Point(x, y), this[x][y])
 		}
 	}
 }
-
