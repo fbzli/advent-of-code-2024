@@ -49,6 +49,33 @@ fun <T, R> List<List<T>>.zip(zipper: (List<T>) -> R): List<R> {
 }
 
 /**
+ * Split a list into a list of lists separated by the elements defined through the selector function.
+ */
+inline fun <T> List<T>.split(selector: (T) -> Boolean) = iterator().split(selector)
+
+/**
+ * Split a sequence into a list of lists separated by the elements defined through the selector function.
+ */
+inline fun <T> Sequence<T>.split(selector: (T) -> Boolean) = iterator().split(selector)
+
+/**
+ * Split a list into a list of lists separated by the elements defined through the selector function.
+ */
+inline fun <T> Iterator<T>.split(selector: (T) -> Boolean): List<List<T>> {
+	val result = mutableListOf<MutableList<T>>().also { it.add(mutableListOf()) }
+	var group = 0
+	for (element in this) {
+		if (selector(element)) {
+			group++
+			result.add(mutableListOf())
+		} else {
+			result[group].add(element)
+		}
+	}
+	return result
+}
+
+/**
  * Map List to List of Ints.
  */
 inline fun List<String>.mapToInts(): List<Int> {
@@ -61,6 +88,14 @@ inline fun List<String>.mapToInts(): List<Int> {
 inline fun <T> List<T>.toPair(): Pair<T, T> {
 	require(size >= 2)
 	return get(0) to get(1)
+}
+
+/**
+ * Get the middle element of a list. Length must be odd.
+ */
+inline fun <T> List<T>.middle(): T {
+	require(size % 2 == 1)
+	return get(size / 2)
 }
 
 /**
