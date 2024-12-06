@@ -99,6 +99,16 @@ inline fun <T> List<T>.middle(): T {
 }
 
 /**
+ * Get the number of columns in this XY matrix.
+ */
+inline val <T> List<List<T>>.width: Int get() = size
+
+/**
+ * Get the number of rows in this XY matrix.
+ */
+inline val <T> List<List<T>>.height: Int get() = firstOrNull()?.size ?: 0
+
+/**
  * Get the element at the specified XY index or null if the index is out of bounds.
  */
 inline fun <T> List<List<T>>.getOrNull(x: Int, y: Int): T? {
@@ -127,6 +137,20 @@ inline operator fun <T> List<List<T>>.get(point: Point): T {
 }
 
 /**
+ * Set the element at the specified XY index.
+ */
+inline operator fun <T> List<MutableList<T>>.set(point: Point, value: T) {
+	this[point.x][point.y] = value
+}
+
+/**
+ * Make a mutable copy of the matrix.
+ */
+inline fun <T> List<List<T>>.mutable(): List<MutableList<T>> {
+	return map { it.toMutableList() }
+}
+
+/**
  * Check if the specified XY index is within the bounds of the matrix.
  */
 inline fun <T> List<List<T>>.containsIndex(x: Int, y: Int): Boolean {
@@ -138,6 +162,19 @@ inline fun <T> List<List<T>>.containsIndex(x: Int, y: Int): Boolean {
  */
 inline fun <T> List<List<T>>.containsIndex(point: Point): Boolean {
 	return containsIndex(point.x, point.y)
+}
+
+/**
+ * Find the index of the first occurrence (lowest x) of the specified value in the matrix.
+ */
+inline fun <T> List<List<T>>.indexOf(value: T): Point? {
+	for (x in indices) {
+		val y = this[x].indexOf(value)
+		if (y != -1) {
+			return Point(x, y)
+		}
+	}
+	return null
 }
 
 /**
@@ -175,4 +212,18 @@ inline fun <T> List<List<T>>.forEachIndexed(action: (xy: Point, value: T) -> Uni
 			action(Point(x, y), this[x][y])
 		}
 	}
+}
+
+/**
+ * Create a mutable XY matrix with the specified dimensions and initialize each element with the [initializer] function.
+ */
+inline fun <T> mutableXyMatrix(width: Int, height: Int, initializer: (x: Int, y: Int) -> T): List<MutableList<T>> {
+	return List(width) { x -> MutableList(height) { y -> initializer(x, y) } }
+}
+
+/**
+ * Create an XY matrix with the specified dimensions and initialize each element with the [initializer] function.
+ */
+inline fun <T> xyMatrix(width: Int, height: Int, initializer: (x: Int, y: Int) -> T): List<List<T>> {
+	return mutableXyMatrix(width, height, initializer)
 }
