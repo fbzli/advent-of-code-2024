@@ -99,6 +99,19 @@ inline fun <T> List<T>.middle(): T {
 }
 
 /**
+ * Find the start index of the first occurrence of the specified subList in this list.
+ * @param fromIndex inclusive, default 0
+ * @param toIndex exclusive, default size
+ * @return index of the first occurrence, or -1 if not found.
+ */
+inline fun <T> List<T>.indexOfSubList(subList: List<T>, fromIndex: Int = 0, toIndex: Int = size): Int {
+	subList(fromIndex, toIndex).asSequence().windowed(subList.size).forEachIndexed { index: Int, window ->
+		if (window == subList) return index + fromIndex
+	}
+	return -1
+}
+
+/**
  * Get the number of columns in this XY matrix.
  */
 inline val <T> List<List<T>>.width: Int get() = size

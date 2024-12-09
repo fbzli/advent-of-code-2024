@@ -1,52 +1,57 @@
 import utils.day
+import utils.indexOfSubList
 
 fun main() = day(9) {
 
+	val freeSpace = List(10) { i -> List(i) { null } }
+
 	part1 {
 		val disk = readLine().map { it.digitToInt() }
-			.flatMapIndexed { index: Int, value: Int ->
-				if (index % 2 == 0) List(value) { index / 2 }
-				else List(value) { '.' }
+			.flatMapIndexed { index: Int, length: Int ->
+				if (index % 2 == 0) List(length) { index / 2L }
+				else freeSpace[length]
 			}.toMutableList()
-		var i = 0
-		var j = disk.lastIndex
-		while (i < j) {
-			if (disk[i] == '.') {
-				while (disk[j] == '.') j--
-				disk[i] = disk[j]
-				disk[j] = '.'
-				j--
+		var l = 0
+		var r = disk.lastIndex
+		while (l < r) {
+			if (disk[l] == null) {
+				while (disk[r] == null) r--
+				disk[l] = disk[r]
+				disk[r] = null
+				r--
 			}
-			i++
+			l++
 		}
-		disk.mapIndexed { index, value -> index * if (value == '.') 0L else (value as Int).toLong() }.sum()
+		disk.mapIndexedNotNull { index, value -> value?.times(index) }.sum()
 	}
 
 	part2 {
 		val disk = readLine().map { it.digitToInt() }
-			.flatMapIndexed { index: Int, value: Int ->
-				if (index % 2 == 0) List(value) { index / 2 }
-				else List(value) { '.' }
+			.flatMapIndexed { index: Int, length: Int ->
+				if (index % 2 == 0) List(length) { index / 2L }
+				else freeSpace[length]
 			}.toMutableList()
-		var j = disk.lastIndex
-		while (j > 0) {
-			while (disk[j] == '.') j--
-			var fileLength = 1
-			var k = j -1
-			while (k > 0 && disk[k] == disk[j]) {
-				fileLength++
-				k--
-			}
-			val place = disk.map { if (it == '.') '.' else '-' }.joinToString("").indexOf(".".repeat(fileLength))
-			if (place != -1 && place < k) {
-				disk.subList(place, place + fileLength).fill(disk[j])
-				for (x in (k+1)..j) {
-					disk[x] = '.'
+		val freeSpaceLeftLimit = MutableList(10) { 0 } // perf optimization, first possible index on the disk to find space of a given size
+		var fileEnd = disk.lastIndex
+		while (fileEnd > 0) {
+			while (disk[fileEnd] == null) fileEnd--
+			var fileStart = fileEnd
+			while (fileStart > 0 && disk[fileStart - 1] == disk[fileEnd]) fileStart--
+			val fileLength = fileEnd - fileStart + 1
+			val spaceSearchStart = freeSpaceLeftLimit[fileLength]
+			if (spaceSearchStart < fileStart) {
+				val spaceStart = disk.indexOfSubList(freeSpace[fileLength], fromIndex = spaceSearchStart)
+				if (spaceStart != -1 && spaceStart < fileStart) {
+					disk.subList(spaceStart, spaceStart + fileLength).fill(disk[fileStart])
+					disk.subList(fileStart, fileEnd + 1).fill(null)
+					for (l in fileLength..9) {
+						freeSpaceLeftLimit[l] = freeSpaceLeftLimit[l].coerceAtLeast(spaceStart + fileLength)
+					}
 				}
 			}
-			j -= fileLength
+			fileEnd = fileStart - 1
 		}
-		disk.mapIndexed { index, value -> index * if (value == '.') 0L else (value as Int).toLong() }.sum()
+		disk.mapIndexedNotNull { index, value -> value?.times(index) }.sum()
 	}
 
 }
