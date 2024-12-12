@@ -6,31 +6,10 @@ import java.awt.Point
 fun main() = day(12) {
 
 	part1 {
-		/** Flood fill the area of the matrix starting from [xy] with the corresponding lowercase char
-		 * and return the area and length of perimeters of the area. */
-		fun List<MutableList<Char>>.floodFill(xy: Point): Pair<Int, Int> {
-			val value = this[xy]
-			this[xy] = this[xy].lowercaseChar()
-			var perimeters = 0
-			var area = 1
-			xy.fourNeighbors().forEach { neighbor ->
-				if (this.getOrNull(neighbor) == value) {
-					val (nArea, nPerimeters) = floodFill(neighbor)
-					area += nArea
-					perimeters += nPerimeters
-				} else if (this.getOrNull(neighbor) == value.lowercaseChar()) {
-					// nothing
-				} else {
-					perimeters++
-				}
-			}
-			return area to perimeters
-		}
-
-		val map = readLines().unzipChars().mutable()
-		map.sumOfIndexed { xy: Point, value: Char ->
-			if (value.isUpperCase()) {
-				val (area, perimeters) = map.floodFill(xy)
+		val map = readLines().unzipChars().mapValues { it.code }.mutable()
+		map.sumOfIndexed { xy: Point, value: Int ->
+			if (value > 0) {
+				val (area, perimeters) = map.negateArea(xy)
 				area * perimeters
 			} else {
 				0
@@ -39,54 +18,58 @@ fun main() = day(12) {
 	}
 
 	part2 {
-		/** Flood fill the area of the matrix starting from [xy] with dots and return the area. */
-		fun List<MutableList<Char>>.floodFill(xy: Point): Int {
-			val value = this[xy]
-			this[xy] = '.'
-			return xy.fourNeighbors().sumOf { neighbor ->
-				if (this.getOrNull(neighbor) == value) {
-					floodFill(neighbor)
-				} else {
-					0
-				}
-			} + 1
-		}
-
-		/** Find the number of corners of the '.' area in the matrix. */
-		fun List<MutableList<Char>>.countCorners(): Int {
-			val isPoint = { xy: Point -> getOrNull(xy) == '.' }
-			var corners = 0
-			for (x in -1 until width) {
-				for (y in -1 until height) {
-					// 2-by-2 masks to match corners
-					val xy = Point(x, y)
-					val `◤` = isPoint(xy)
-					val `◥` = isPoint(xy.`▶`())
-					val `◣` = isPoint(xy.`▼`())
-					val `◢` = isPoint(xy.`◢`())
-					if (`◤` != `◢` && `◣` == `◥` || `◤` == `◢` && `◣` != `◥`) {
-						corners++
-					} else if (`◤` == `◢` && `◣` == `◥` && `◤` != `◥`) {
-						corners += 2
-					}
-				}
+		/** Find the number of corners of the area with negative numbers in the matrix. */
+		fun List<MutableList<Int>>.countCorners(): Int {
+			val isInArea = { value: Int? -> (value ?: 0) < 0 }
+			// 2-by-2 masks to match corners
+			return windowed(size = Point(2,2), partial = true).sumOf {
+				val `◤` = isInArea(it[0, 0])
+				val `◥` = isInArea(it[1, 0])
+				val `◣` = isInArea(it[0, 1])
+				val `◢` = isInArea(it[1, 1])
+				when {
+					`◤` != `◢` && `◣` == `◥` || `◤` == `◢` && `◣` != `◥` -> 1
+					`◤` == `◢` && `◣` == `◥` && `◤` != `◥` -> 2
+					else -> 0
+				}.toInt()
 			}
-			return corners
 		}
 
-		val original = readLines().unzipChars()
-		val progressed = original.mutable()
-		progressed.sumOfIndexed { xy: Point, value: Char ->
-			if (value != '.') {
-				progressed.floodFill(xy)
-				val map = original.mutable()
-				val area = map.floodFill(xy)
+		val input = readLines().unzipChars().mapValues { it.code }
+		val map = input.mutable()
+		map.sumOfIndexed { xy: Point, value: Int ->
+			if (value > 0) {
+				map.negateArea(xy)
+				val local = input.mutable()
+				val (area, _) = local.negateArea(xy)
 				// for any polygon, the number of corners is equal to the number of edges.
-				map.countCorners() * area
+				val corners = local.countCorners()
+				corners * area
 			} else {
 				0
 			}
 		}
 	}
 
+}
+
+/**
+ * Flood fill (floodFill) the same-valued area starting from [xy] by flipping the values negative.
+ * @return the size of the filled area and the length of the perimeter.
+ */
+private fun List<MutableList<Int>>.negateArea(xy: Point): Pair<Int, Int> {
+	val value = this[xy]
+	this[xy] *= -1
+	var perimeters = 0
+	var area = 1
+	xy.fourNeighbors().forEach { neighbor ->
+		if (getOrNull(neighbor) == value) {
+			val (nArea, nPerimeters) = negateArea(neighbor)
+			area += nArea
+			perimeters += nPerimeters
+		} else if (getOrNull(neighbor) != -value) {
+			perimeters++
+		}
+	}
+	return area to perimeters
 }

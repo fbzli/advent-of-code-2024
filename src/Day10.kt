@@ -4,14 +4,14 @@ import java.awt.Point
 fun main() = day(10) {
 
 	part1 {
-		val map = readLines().unzipChars().map { it.map { c -> c.digitToInt() } }
+		val map = readLines().unzipChars().mapValues { it.digitToInt() }
 		map.sumOfIndexed { xy, height ->
 			if (height == 0) map.getPeaks(xy).toSet().size else 0
 		}
 	}
 
 	part2 {
-		val map = readLines().unzipChars().map { it.map { c -> c.digitToInt() } }
+		val map = readLines().unzipChars().mapValues { it.digitToInt() }
 		map.sumOfIndexed { xy, height ->
 			if (height == 0) map.getPeaks(xy).size else 0
 		}

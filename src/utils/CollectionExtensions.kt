@@ -164,6 +164,13 @@ inline fun <T> List<List<T>>.mutable(): List<MutableList<T>> {
 }
 
 /**
+ * Map values of the matrix to a new value.
+ */
+inline fun <T, R> List<List<T>>.mapValues(transform: (T) -> R): List<List<R>> {
+	return map { it.map(transform) }
+}
+
+/**
  * Check if the specified XY index is within the bounds of the matrix.
  */
 inline fun <T> List<List<T>>.containsIndex(x: Int, y: Int): Boolean {
@@ -223,6 +230,25 @@ inline fun <T> List<List<T>>.forEachIndexed(action: (xy: Point, value: T) -> Uni
 	for (x in indices) {
 		for (y in this[x].indices) {
 			action(Point(x, y), this[x][y])
+		}
+	}
+}
+
+/**
+ * Returns a sequence of snapshots of the window of the given size sliding along this sequence with the given step, where each snapshot is a xy matrix.
+ */
+inline fun <T> List<List<T>>.windowed(size: Point, step: Point = Point(1, 1), partial: Boolean = false) = Sequence {
+	iterator {
+		val startX = if (partial) -size.x + 1 else 0
+		val startY = if (partial) -size.y + 1 else 0
+		for (x in startX until width step step.x) {
+			for (y in startY until height step step.y) {
+				yield(List(size.x) { dx ->
+					List(size.y) { dy ->
+						getOrNull(x + dx, y + dy)
+					}
+				})
+			}
 		}
 	}
 }
