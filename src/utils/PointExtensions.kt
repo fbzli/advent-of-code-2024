@@ -10,6 +10,8 @@ operator fun Point.component2() = y
 operator fun Point.plus(p: Point) = Point(x + p.x, y + p.y)
 operator fun Point.minus(p: Point) = Point(x - p.x, y - p.y)
 operator fun Point.times(s: Int) = Point(x * s, y * s)
+operator fun Point.div(s: Int) = Point(x / s, y / s)
+infix fun Point.mod(p: Point) = Point(x.mod(p.x), y.mod(p.y))
 
 inline fun Point.transpose() = Point(y, x)
 

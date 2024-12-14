@@ -266,3 +266,17 @@ inline fun <T> mutableXyMatrix(width: Int, height: Int, initializer: (x: Int, y:
 inline fun <T> xyMatrix(width: Int, height: Int, initializer: (x: Int, y: Int) -> T): List<List<T>> {
 	return mutableXyMatrix(width, height, initializer)
 }
+
+/**
+ * Create a mutable XY matrix with the specified dimensions and initialize each element with the [initializer] function.
+ */
+inline fun <T> mutableXyMatrix(size: Point, initializer: (x: Int, y: Int) -> T): List<MutableList<T>> {
+	return mutableXyMatrix(size.x, size.y, initializer)
+}
+
+/**
+ * Create an XY matrix with the specified dimensions and initialize each element with the [initializer] function.
+ */
+inline fun <T> xyMatrix(size: Point, initializer: (x: Int, y: Int) -> T): List<List<T>> {
+	return mutableXyMatrix(size, initializer)
+}
