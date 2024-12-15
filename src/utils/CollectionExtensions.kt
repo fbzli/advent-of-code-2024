@@ -280,3 +280,15 @@ inline fun <T> mutableXyMatrix(size: Point, initializer: (x: Int, y: Int) -> T):
 inline fun <T> xyMatrix(size: Point, initializer: (x: Int, y: Int) -> T): List<List<T>> {
 	return mutableXyMatrix(size, initializer)
 }
+
+/**
+ * Print an XY matrix of Chars.
+ */
+inline fun List<List<Char>>.print() {
+	for (y in 0 until height) {
+		for (x in 0 until width) {
+			print(this[x][y])
+		}
+		println()
+	}
+}
