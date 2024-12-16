@@ -1,5 +1,4 @@
 import utils.*
-import java.awt.Point
 
 fun main() = day(6) {
 
@@ -54,24 +53,4 @@ fun main() = day(6) {
 		}
 	}
 
-}
-
-private fun Point.moveByAsciiDirection(direction: Char): Point {
-	return when (direction) {
-		'^' -> `▲`()
-		'>' -> `▶`()
-		'v' -> `▼`()
-		'<' -> `◀`()
-		else -> error("Invalid direction '$direction' at $this")
-	}
-}
-
-private fun Char.asciiDirectionRotateRight(): Char {
-	return when (this) {
-		'^' -> '>'
-		'>' -> 'v'
-		'v' -> '<'
-		'<' -> '^'
-		else -> error("Invalid direction '$this'")
-	}
 }

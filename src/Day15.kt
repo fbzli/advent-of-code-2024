@@ -1,7 +1,7 @@
 import utils.*
 import java.awt.Point
 
-// !!! requires Kotlin 2.1 with when-quards and K2 mode enabled
+// !!! requires Kotlin 2.1 with when-guards and K2 mode enabled
 
 fun main() = day(15) {
 
@@ -85,15 +85,5 @@ private fun List<MutableList<Char>>.doPush(pos: Point, dir: Char, pushed: Char) 
 			doPush(target, dir, objAtTarget)
 			this[target] = pushed
 		}
-	}
-}
-
-private fun Point.moveByAsciiDirection(direction: Char): Point {
-	return when (direction) {
-		'^' -> `▲`()
-		'>' -> `▶`()
-		'v' -> `▼`()
-		'<' -> `◀`()
-		else -> error("Invalid direction '$direction' at $this")
 	}
 }

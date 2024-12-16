@@ -31,3 +31,5 @@ fun Point.fourNeighbors() = listOf(`▲`(), `▶`(), `▼`(), `◀`())
 val EightDirections = Point(0, 0).eightNeighbors()
 
 fun Point.eightNeighbors() = listOf(`◤`(), `▲`(), `◥`(), `▶`(), `◢`(), `▼`(), `◣`(), `◀`())
+
+fun Point.moveByAsciiDirection(direction: Char) = plus(direction.asciiAsVector())
