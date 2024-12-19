@@ -1,6 +1,7 @@
 
 import utils.day
 import utils.mapToInts
+import utils.skipLine
 
 fun main() = day(17) {
 
@@ -19,7 +20,7 @@ fun main() = day(17) {
 
 	part1 {
 		val register = (1..3).map { readLine().substringAfter(": ").toInt() }.toMutableList()
-		readLine()
+		skipLine()
 		val prog = readLine().substringAfter(": ").split(",").mapToInts()
 		val output = mutableListOf<Int>()
 		var instructionPointer = 0
