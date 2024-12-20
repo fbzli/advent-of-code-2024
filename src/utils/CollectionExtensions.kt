@@ -99,6 +99,13 @@ inline fun <T> List<T>.middle(): T {
 }
 
 /**
+ * Returns a view of the portion of this list starting at the specified [fromIndex] (inclusive).
+ */
+inline fun <T> List<T>.subList(fromIndex: Int): List<T> {
+	return subList(fromIndex.coerceAtMost(size - 1), size)
+}
+
+/**
  * Find the start index of the first occurrence of the specified subList in this list.
  * @param fromIndex inclusive, default 0
  * @param toIndex exclusive, default size
@@ -109,6 +116,14 @@ inline fun <T> List<T>.indexOfSubList(subList: List<T>, fromIndex: Int = 0, toIn
 		if (window == subList) return index + fromIndex
 	}
 	return -1
+}
+
+inline fun <T> List<T>.sumOfIndexedA(selector: (index: Int, value: T) -> Int): Long {
+	var sum = 0L
+	forEachIndexed { index, value ->
+		sum += selector(index, value)
+	}
+	return sum
 }
 
 /**
@@ -219,6 +234,17 @@ inline fun <T> List<List<T>>.countIndexed(predicate: (xy: Point, value: T) -> Bo
 		}
 	}
 	return count
+}
+
+/**
+ * Returns a list containing only the non-null results of applying the given [transform] function to each element in the original collection.
+ */
+inline fun <T, R> List<List<T>>.mapIndexedNotNull(transform: (xy: Point, value: T) -> R): List<R> {
+	val list = mutableListOf<R>()
+	forEachIndexed { xy, value ->
+		transform(xy, value)?.let { list.add(it) }
+	}
+	return list
 }
 
 /**

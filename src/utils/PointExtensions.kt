@@ -3,6 +3,7 @@
 package utils
 
 import java.awt.Point
+import kotlin.math.abs
 
 operator fun Point.component1() = x
 operator fun Point.component2() = y
@@ -31,5 +32,7 @@ fun Point.fourNeighbors() = listOf(`▲`(), `▶`(), `▼`(), `◀`())
 val EightDirections = Point(0, 0).eightNeighbors()
 
 fun Point.eightNeighbors() = listOf(`◤`(), `▲`(), `◥`(), `▶`(), `◢`(), `▼`(), `◣`(), `◀`())
+
+fun Point.manhattanTo(other: Point) = abs(x - other.x) + abs(y - other.y)
 
 fun Point.moveByAsciiDirection(direction: Char) = plus(direction.asciiAsVector())
