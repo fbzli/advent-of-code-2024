@@ -213,6 +213,13 @@ inline fun <T> List<List<T>>.indexOf(value: T): Point? {
 }
 
 /**
+ * Transpose the matrix.
+ */
+inline fun <T> List<List<T>>.transpose(): List<List<T>> {
+	return xyMatrix(height, width) { x, y -> this[y][x] }
+}
+
+/**
  * Returns the sum of all values produced by [selector] function applied to each element in the collection.
  */
 inline fun <T> List<List<T>>.sumOfIndexed(selector: (xy: Point, value: T) -> Int): Long {
