@@ -127,6 +127,14 @@ inline fun <T> List<T>.sumOfIndexedA(selector: (index: Int, value: T) -> Int): L
 }
 
 /**
+ * Swap the values at the specified keys.
+ */
+fun <K, V> MutableMap<K, V>.swap(a: K, b: K) {
+	@Suppress("UNCHECKED_CAST")
+	this[a] = (this[b] as V).also { this[b] = this[a] as V }
+}
+
+/**
  * Get the number of columns in this XY matrix.
  */
 inline val <T> List<List<T>>.width: Int get() = size
